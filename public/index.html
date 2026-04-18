@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNSmasq server</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --border-color: #ccc;
+            --header-bg: #f2f2f2;
+            --row-even-bg: #f9f9f9;
+            --timestamp-color: #444;
+            --system-info-bg: #f5f5f5;
+            --stat-bg: #fff;
+            --stat-label-color: #333;
+            --stat-value-color: #000;
+            --banner-error-bg: #fee;
+            --banner-error-color: #c00;
+            --banner-error-border: #c00;
+            --banner-ok-bg: #efe;
+            --banner-ok-color: #080;
+            --banner-ok-border: #080;
+            --focus-outline: #0066cc;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --border-color: #666;
+            --header-bg: #2a2a2a;
+            --row-even-bg: #252525;
+            --timestamp-color: #bbb;
+            --system-info-bg: #222;
+            --stat-bg: #2a2a2a;
+            --stat-label-color: #aaa;
+            --stat-value-color: #f0f0f0;
+            --banner-error-bg: #4a2a2a;
+            --banner-error-color: #ff6666;
+            --banner-error-border: #ff6666;
+            --banner-ok-bg: #2a3a2a;
+            --banner-ok-color: #66ff66;
+            --banner-ok-border: #66ff66;
+            --focus-outline: #ffcc00;
+        }
+        body {
+            font-family: monospace;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+        th {
+            background-color: var(--header-bg);
+            color: var(--text-color);
+        }
+        tr:nth-child(even) {
+            background-color: var(--row-even-bg);
+        }
+        .timestamp {
+            color: var(--timestamp-color);
+            font-size: 14px;
+        }
+        .content-box {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--system-info-bg);
+        }
+        .system-info {
+            margin: 0;
+            padding: 0;
+            border: none;
+            background-color: transparent;
+        }
+        .system-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .system-stat {
+            background-color: var(--stat-bg);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        .system-stat-label {
+            font-size: 12px;
+            color: var(--stat-label-color);
+        }
+        .system-stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--stat-value-color);
+        }
+        #statusBanner {
+            display: none;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        #statusBanner.error {
+            display: block;
+            background-color: var(--banner-error-bg);
+            color: var(--banner-error-color);
+            border: 1px solid var(--banner-error-border);
+        }
+        #statusBanner.ok {
+            display: block;
+            background-color: var(--banner-ok-bg);
+            color: var(--banner-ok-color);
+            border: 1px solid var(--banner-ok-border);
+        }
+        #themeToggle {
+            padding: 8px 12px;
+            margin-left: 15px;
+            background-color: var(--header-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        #themeToggle:hover {
+            opacity: 0.9;
+        }
+        #themeToggle:focus {
+            outline: 3px solid var(--focus-outline);
+            outline-offset: 2px;
+        }
+        button:focus {
+            outline: 3px solid var(--focus-outline);
+            outline-offset: 2px;
+        }
+        a:focus, [tabindex]:focus {
+            outline: 3px solid var(--focus-outline);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h1 style="margin: 0;">DNSmasq server</h1>
+            <button id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+        </div>
+        <div class="system-info" style="margin: 0; padding: 0; border: none; background: none;">
+            <h3 style="margin-bottom: 10px;" id="systemInfoLabel">System Information</h3>
+            <div class="system-stats" role="list">
+                <div class="system-stat" role="listitem">
+                    <div class="system-stat-label">CPU Load (1m)</div>
+                    <div class="system-stat-value" id="cpuLoad">--</div>
+                </div>
+                <div class="system-stat" role="listitem">
+                    <div class="system-stat-label">Memory Usage</div>
+                    <div class="system-stat-value" id="memUsage">--%</div>
+                </div>
+                <div class="system-stat" role="listitem">
+                    <div class="system-stat-label">Uptime</div>
+                    <div class="system-stat-value" id="uptime">--</div>
+                </div>
+                <div class="system-stat" role="listitem">
+                    <div class="system-stat-label">Hostname</div>
+                    <div class="system-stat-value" id="hostname">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="statusBanner" aria-live="polite" role="alert" aria-labelledby="statusBannerTitle"></div>
+    <div class="content-box">
+        <h3 style="margin-top: 0;">Current DHCP leases: <span id="currentLeaseCount">--</span></h3>
+        <p class="timestamp" aria-live="polite">Last lease file update: <span id="lastRefreshed"></span></p>
+        <table style="margin-top: 10px;" aria-label="DHCP leases table">
+            <thead>
+                <tr>
+                    <th scope="col">Expiry &#9660;</th>
+                    <th scope="col">MAC Address</th>
+                    <th scope="col">IP Address</th>
+                    <th scope="col">Hostname</th>
+                </tr>
+            </thead>
+            <tbody id="leasesTable" aria-label="List of DHCP lease entries">
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const tableBody = document.getElementById("leasesTable");
+        const lastRefreshedSpan = document.getElementById("lastRefreshed");
+        const cpuLoadEl = document.getElementById("cpuLoad");
+        const memUsageEl = document.getElementById("memUsage");
+        const uptimeEl = document.getElementById("uptime");
+        const hostnameEl = document.getElementById("hostname");
+        const currentLeaseCountEl = document.getElementById("currentLeaseCount");
+        const statusBanner = document.getElementById("statusBanner");
+        const themeToggle = document.getElementById("themeToggle");
+        const statusBannerTitle = document.getElementById("statusBannerTitle") || document.createElement("span");
+        statusBannerTitle.id = "statusBannerTitle";
+        statusBanner.insertAdjacentElement("afterbegin", statusBannerTitle);
+        let currentFileMtime = null;
+        let previousFileMtime = null;
+        let connected = true;
+
+        function formatUptime(seconds) {
+            const d = Math.floor(seconds / (3600 * 24));
+            const h = Math.floor((seconds % (3600 * 24)) / 3600);
+            return `${d}d ${h}h`;
+        }
+
+        function setTheme() {
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            const savedTheme = localStorage.getItem("theme");
+            let isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
+            if (isDark) {
+                document.documentElement.setAttribute("data-theme", "dark");
+                themeToggle.textContent = "☀️ Light Mode";
+            } else {
+                document.documentElement.removeAttribute("data-theme");
+                themeToggle.textContent = "🌙 Dark Mode";
+            }
+            themeToggle.setAttribute("aria-expanded", isDark);
+        }
+
+        themeToggle.addEventListener("click", () => {
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            let isDark = currentTheme === "dark";
+            if (isDark) {
+                document.documentElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                themeToggle.textContent = "🌙 Dark Mode";
+            } else {
+                document.documentElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                themeToggle.textContent = "☀️ Light Mode";
+            }
+            themeToggle.setAttribute("aria-expanded", !isDark);
+        });
+
+        setTheme();
+
+        function setConnected(ok) {
+            if (ok === connected) return;
+            connected = ok;
+            if (ok) {
+                statusBanner.className = "ok";
+                statusBanner.textContent = "Connection restored";
+                setTimeout(() => { statusBanner.className = ""; statusBanner.textContent = ""; }, 3000);
+            } else {
+                statusBanner.className = "error";
+                statusBanner.textContent = "Cannot connect to server";
+            }
+        }
+
+        async function fetchSystemInfo() {
+            try {
+                const response = await fetch("/system-info");
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error (${response.status}): ${errorText}`);
+                }
+                const systemInfo = await response.json();
+                cpuLoadEl.textContent = systemInfo.cpuLoad;
+                memUsageEl.textContent = `${systemInfo.memUsage}%`;
+                uptimeEl.textContent = formatUptime(systemInfo.uptime);
+                hostnameEl.textContent = systemInfo.hostname;
+                currentFileMtime = systemInfo.fileMtime;
+                setConnected(true);
+            } catch (error) {
+                setConnected(false);
+                if (error.message.includes("Server error")) {
+                    statusBanner.className = "error";
+                    statusBanner.textContent = error.message;
+                }
+            }
+        }
+
+        async function fetchLeases() {
+            if (currentFileMtime !== null && currentFileMtime === previousFileMtime) return;
+
+            try {
+                const response = await fetch("/leases");
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error (${response.status}): ${errorText}`);
+                }
+                const data = await response.json();
+                const leases = data.leases;
+                currentLeaseCountEl.textContent = leases.length;
+                setConnected(true);
+                displayLeases(leases);
+                lastRefreshedSpan.textContent = new Date(currentFileMtime).toLocaleString();
+                previousFileMtime = currentFileMtime;
+            } catch (error) {
+                if (error.message.includes("Server error")) {
+                    const timestamp = new Date().toLocaleString();
+                    statusBanner.className = "error";
+                    statusBanner.textContent = `${error.message} (${timestamp})\nReload page to clear`;
+                }
+            }
+        }
+
+        function displayLeases(leases) {
+            tableBody.innerHTML = "";
+            if (leases.length === 0) {
+                const row = document.createElement("tr");
+                const td = document.createElement("td");
+                td.colSpan = 4;
+                td.textContent = "No DHCP leases found";
+                td.style.textAlign = "center";
+                row.appendChild(td);
+                tableBody.appendChild(row);
+                return;
+            }
+            leases.forEach((lease) => {
+                const row = document.createElement("tr");
+                const cells = [
+                    new Date(lease.expiry * 1000).toLocaleString(),
+                    lease.mac,
+                    lease.ip,
+                    lease.hostname
+                ];
+                cells.forEach((text) => {
+                    const td = document.createElement("td");
+                    td.textContent = text;
+                    row.appendChild(td);
+                });
+                tableBody.appendChild(row);
+            });
+        }
+
+        fetchSystemInfo();
+        fetchLeases();
+        setInterval(fetchSystemInfo, 5000);
+        setInterval(fetchLeases, 500);
+    </script>
+</body>
+</html>

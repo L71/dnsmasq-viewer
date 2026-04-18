@@ -1,0 +1,37 @@
+[Unit]
+Description=DNSmasq Lease Viewer
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/opt/dnsmasq-viewer
+ExecStart=/usr/bin/python3 /opt/dnsmasq-viewer/src/server.py
+Restart=on-failure
+RestartSec=5
+
+Environment=HOST=0.0.0.0
+Environment=PORT=8000
+Environment=LEASEFILE=/var/lib/misc/dnsmasq.leases
+
+# Hardening
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+MemoryDenyWriteExecute=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ReadWritePaths=
+
+# Memory limit
+MemoryMax=50M
+
+[Install]
+WantedBy=multi-user.target

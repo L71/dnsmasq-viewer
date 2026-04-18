@@ -1,0 +1,22 @@
+services:
+  dnsmasq-viewer-python:
+    container_name: dnsmasq-viewer-python
+    build:
+      context: .
+      dockerfile: Containerfile
+    hostname: dnsmasq-host
+    ports:
+      - "8000:8000/tcp"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+    volumes:
+      - /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 50m
