@@ -2,6 +2,7 @@
 
 A possibly just a bit over-engineered but lightweight web app that displays DHCP lease information from a dnsmasq server's lease file, along with basic system information (system load, memory usage, uptime, hostname). This is currently used to display DHCP leases handed out from a Raspberry Pi 3 running `dnsmasq` in a homelab.
 
+
 ## Features
 
 - Parses the dnsmasq lease file and displays leases in a table, reverse sorted by lease expiry time which usually results in last lease on top
@@ -15,6 +16,10 @@ A possibly just a bit over-engineered but lightweight web app that displays DHCP
 - Dark theme toggle
 - Minimal dependencies — uses only Python stdlib
 - Deployment toolkit included (more info below)
+
+This what it looks like, also showing the disconnected alert.
+
+![Screenshot](screenshot.png)
 
 
 ## How & Why
