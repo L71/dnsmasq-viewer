@@ -280,6 +280,7 @@
                 hostnameEl.textContent = systemInfo.hostname;
                 currentFileMtime = systemInfo.fileMtime;
                 setConnected(true);
+                fetchLeases();
             } catch (error) {
                 setConnected(false);
                 if (error.message.includes("Server error")) {
@@ -346,7 +347,6 @@
         fetchSystemInfo();
         fetchLeases();
         setInterval(fetchSystemInfo, 5000);
-        setInterval(fetchLeases, 500);
     </script>
 </body>
 </html>
