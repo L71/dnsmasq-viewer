@@ -15,6 +15,7 @@ A possibly just a bit over-engineered but lightweight web app that displays DHCP
   - Alerts if lease file can not be read (permission denied/wrong path/corrupt file)
 - Dark theme toggle
 - Minimal dependencies — uses only Python stdlib
+- Network access control — restricts access to specific IP ranges
 - Deployment toolkit included (more info below)
 
 This what it looks like, also showing the disconnected alert.
@@ -93,6 +94,7 @@ The service runs with systemd's `DynamicUser` (random unprivileged user, no home
 | `PORT` | HTTP listen port | `8000` |
 | `LEASEFILE` | Path to the dnsmasq lease file | `/var/lib/misc/dnsmasq.leases` |
 | `HOSTNAME` | Override the system hostname | |
+| `ALLOWED_NETWORKS` | Comma-separated list of allowed IPv4/IPv6 networks in CIDR notation. Connections from other IPs are rejected with `403 Forbidden`. | `192.168.0.0/16,127.0.0.1` |
 | `DEBUG` | Enable detailed HTTP request logging to console | Empty (logging disabled) |
 
 Example:
@@ -110,6 +112,6 @@ docker run -d -e DEBUG=1 -p 8080:8080 \
 ## Known issues / Good-to-know
 
 - DHCP client IDs not displayed since I am not using that in my setup.
-- No access control, the web page and API endpoints are public.
+- Network access control is enabled by default — only IPs in `192.168.0.0/16` or `127.0.0.1` can connect. Set `ALLOWED_NETWORKS` to customize, e.g. `10.0.0.0/8,172.16.0.0/12`. Use `0.0.0.0/0` to allow all connections.
 - There is no strict input validation on the lease file structure.
-- By default, HTTP request logging is disabled to keep the console clean. Set the `DEBUG` environment variable to enable detailed request logging.
+- By default, HTTP request logging is disabled to keep the console clean. Set the `DEBUG` environment variable to enable detailed request logging. When enabled, you may see garbled "Bad request" messages from clients that retry with HTTPS on the HTTP port — this is harmless and can be safely ignored.
