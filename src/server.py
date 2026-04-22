@@ -16,10 +16,24 @@ import os
 import platform
 import socket
 import logging
+import ipaddress
 
 LEASE_FILE = os.environ.get('LEASEFILE', '/var/lib/misc/dnsmasq.leases')
 HOSTNAME_OVERRIDE = os.environ.get('HOSTNAME')
 DEBUG = os.environ.get('DEBUG')
+ALLOWED_NETWORKS = os.environ.get(
+    'ALLOWED_NETWORKS', '192.168.0.0/16,127.0.0.1'
+)
+
+ALLOWED_NETWORK_OBJ = []
+for net in ALLOWED_NETWORKS.split(','):
+    net = net.strip()
+    if '/' not in net:
+        net += '/32'
+    try:
+        ALLOWED_NETWORK_OBJ.append(ipaddress.ip_network(net, strict=False))
+    except ValueError:
+        logging.warning(f'Skipping invalid network: {net}')
 
 logging.basicConfig(
     level=logging.INFO if DEBUG else logging.WARNING,
@@ -125,6 +139,15 @@ def get_system_info():
         'hostname': HOSTNAME_OVERRIDE or socket.gethostname()
     }
 
+
+def is_allowed(client_ip):
+    """Check if the client IP is in the allowed networks."""
+    try:
+        addr = ipaddress.ip_address(client_ip)
+        return any(addr in network for network in ALLOWED_NETWORK_OBJ)
+    except ValueError:
+        return False
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     """HTTP request handler for the dnsmasq viewer server."""
 
@@ -138,6 +161,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         - /status: Health check
         - /, /index.html: Serve index page
         """
+        if not is_allowed(self.client_address[0]):
+            logging.warning(
+                f"Denied connection from {self.client_address[0]}"
+            )
+            self.send_error_json(403, 'Access denied')
+            return
+
         if self.path == '/leases':
             try:
                 leases = parse_leases()
