@@ -172,7 +172,7 @@
                     <div class="system-stat-value" id="memUsage">--%</div>
                 </div>
                 <div class="system-stat" role="listitem">
-                    <div class="system-stat-label">Uptime</div>
+                    <div class="system-stat-label" id="uptimeLabel">Uptime</div>
                     <div class="system-stat-value" id="uptime">--</div>
                 </div>
                 <div class="system-stat" role="listitem">
@@ -205,6 +205,7 @@
         const cpuLoadEl = document.getElementById("cpuLoad");
         const memUsageEl = document.getElementById("memUsage");
         const uptimeEl = document.getElementById("uptime");
+        const uptimeLabelEl = document.getElementById("uptimeLabel");
         const hostnameEl = document.getElementById("hostname");
         const currentLeaseCountEl = document.getElementById("currentLeaseCount");
         const statusBanner = document.getElementById("statusBanner");
@@ -279,6 +280,11 @@
                 cpuLoadEl.textContent = systemInfo.cpuLoad;
                 memUsageEl.textContent = `${systemInfo.memUsage}%`;
                 uptimeEl.textContent = formatUptime(systemInfo.uptime);
+                if (systemInfo.rebootRequired) {
+                    uptimeLabelEl.textContent = "Uptime (reboot required)";
+                } else {
+                    uptimeLabelEl.textContent = "Uptime";
+                }
                 hostnameEl.textContent = systemInfo.hostname;
                 currentFileMtime = systemInfo.fileMtime;
                 setConnected(true);

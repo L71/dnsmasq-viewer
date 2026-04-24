@@ -9,6 +9,7 @@ A possibly just a bit over-engineered but lightweight web app that displays DHCP
 - Fields displayed: Lease expiry time, MAC address, IP address, hostname as seen by `dnsmasq`. The DHCP client ID field is returned by the server but ignored by the front end for now (I am not using it, my `dnsmasq` is running with `dhcp-ignore-clid`)
 - Auto-refreshes every 5 seconds
 - Shows some system info: lease count, CPU load, memory usage, uptime, hostname
+- Displays "(reboot required)" next to the Uptime label when `/var/run/reboot-required` exists on the host
 - Times and dates should be displayed using the client/browser's time zone conventions if correctly configured and requested from the browser
 - Connection status banner (Hidden unless needed)
   - Alerts if the backend is offline

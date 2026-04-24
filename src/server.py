@@ -81,6 +81,7 @@ def get_system_info():
     """
     cpu_load = '0'
     uptime = 0
+    reboot_required = os.path.exists('/var/run/reboot-required')
     if platform.system() == 'Linux':
         try:
             with open('/proc/loadavg', 'r') as f:
@@ -136,7 +137,8 @@ def get_system_info():
         'platform': platform.system(),
         'arch': platform.machine(),
         'uptime': uptime,
-        'hostname': HOSTNAME_OVERRIDE or socket.gethostname()
+        'hostname': HOSTNAME_OVERRIDE or socket.gethostname(),
+        'rebootRequired': reboot_required,
     }
 
 
