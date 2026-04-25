@@ -108,7 +108,7 @@ Example:
 DEBUG=1 python src/server.py
 
 # Or in Docker
-docker run -d -e DEBUG=1 -p 8080:8080 \
+docker run -d -e DEBUG=1 -p 8000:8000 \
   -v /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro \
   dnsmasq-viewer-python
 ```

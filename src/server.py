@@ -154,6 +154,10 @@ def is_allowed(client_ip):
 class Handler(http.server.SimpleHTTPRequestHandler):
     """HTTP request handler for the dnsmasq viewer server."""
 
+    def __init__(self, *args, **kwargs):
+        dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'public'))
+        super().__init__(*args, **kwargs, directory=dir_path)
+
     def do_GET(self):
         """
         Handle HTTP GET requests.
@@ -233,7 +237,6 @@ def signal_handler(signum, frame):
 if __name__ == '__main__':
     HOST = os.environ.get('HOST', '0.0.0.0')
     PORT = int(os.environ.get('PORT', 8000))
-    os.chdir(os.path.join(os.path.dirname(__file__), '..', 'public'))
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer((HOST, PORT), Handler) as httpd:
         signal.signal(signal.SIGINT, signal_handler)
