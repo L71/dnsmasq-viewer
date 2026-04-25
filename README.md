@@ -91,6 +91,8 @@ The service runs with systemd's `DynamicUser` (random unprivileged user, no home
 
 ## Configuration
 
+When using Docker Compose, you can also use a `.env` file in the project root to manage these variables.
+
 | Environment variable | Description | Default |
 |---------------------|-------------|---------|
 | `HOST` | HTTP listen address | `0.0.0.0` (all addresses) |

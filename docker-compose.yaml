@@ -1,6 +1,7 @@
 services:
-  dnsmasq-viewer-python:
-    container_name: dnsmasq-viewer-python
+  dnsmasq-viewer:
+    image: dnsmasq-viewer:latest
+    container_name: dnsmasq-viewer
     build:
       context: .
       dockerfile: Containerfile
@@ -11,6 +12,7 @@ services:
       - HOST=0.0.0.0
       - PORT=8000
       - REBOOT_REQUIRED=/mnt/run/reboot-required
+      - HOSTNAME=${HOSTNAME}
     volumes:
       - /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro
       - /var/run:/mnt/run:ro
