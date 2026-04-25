@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: Containerfile
-    hostname: dnsmasq-host
     ports:
       - "8000:8000/tcp"
     environment:
