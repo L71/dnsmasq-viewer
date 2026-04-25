@@ -11,6 +11,6 @@ USER appuser
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/status')" || exit 1
+  CMD bash -c 'echo >/dev/tcp/localhost/8000 || exit 1'
 
 CMD ["python", "src/server.py"]
