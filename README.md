@@ -119,5 +119,6 @@ docker run -d -e DEBUG=1 -p 8000:8000 \
 
 - DHCP client IDs not displayed since I am not using that in my setup.
 - Network access control is enabled by default — only IPs in `192.168.0.0/16` or `127.0.0.1` can connect. Set `ALLOWED_NETWORKS` to customize, e.g. `10.0.0.0/8,172.16.0.0/12`. Use `0.0.0.0/0` to allow all connections.
+- The `reboot-required` file check is specific to Debian/Ubuntu-based Linux distributions with the `unattended-upgrades` package installed.
 - There is no strict input validation on the lease file structure.
 - By default, HTTP request logging is disabled to keep the console clean. Set the `DEBUG` environment variable to enable detailed request logging. When enabled, you may see garbled "Bad request" messages from clients that retry with HTTPS on the HTTP port — this is harmless and can be safely ignored.
