@@ -10,8 +10,10 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8000
+      - REBOOT_REQUIRED=/mnt/run/reboot-required
     volumes:
       - /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro
+      - /var/run:/mnt/run:ro
     read_only: true
     tmpfs:
       - /tmp

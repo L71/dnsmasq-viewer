@@ -60,7 +60,9 @@ Or build and run manually:
 ```bash
 docker build -t dnsmasq-viewer-python .
 docker run -d -p 8000:8000 \
+  -e REBOOT_REQUIRED=/mnt/run/reboot-required \
   -v /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro \
+  -v /var/run:/mnt/run:ro \
   dnsmasq-viewer-python
 ```
 
