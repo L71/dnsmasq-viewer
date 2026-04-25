@@ -95,6 +95,7 @@ The service runs with systemd's `DynamicUser` (random unprivileged user, no home
 | `PORT` | HTTP listen port | `8000` |
 | `LEASEFILE` | Path to the dnsmasq lease file | `/var/lib/misc/dnsmasq.leases` |
 | `HOSTNAME` | Override the system hostname | |
+| `REBOOT_REQUIRED` | Path to the reboot-required marker file. Set to empty string to disable the check. | `/var/run/reboot-required` |
 | `ALLOWED_NETWORKS` | Comma-separated list of allowed IPv4/IPv6 networks in CIDR notation. Connections from other IPs are rejected with `403 Forbidden`. | `192.168.0.0/16,127.0.0.1` |
 | `DEBUG` | Enable detailed HTTP request logging to console | Empty (logging disabled) |
 

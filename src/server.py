@@ -21,6 +21,7 @@ import ipaddress
 LEASE_FILE = os.environ.get('LEASEFILE', '/var/lib/misc/dnsmasq.leases')
 HOSTNAME_OVERRIDE = os.environ.get('HOSTNAME')
 DEBUG = os.environ.get('DEBUG')
+REBOOT_REQUIRED_FILE = os.environ.get('REBOOT_REQUIRED', '/var/run/reboot-required')
 ALLOWED_NETWORKS = os.environ.get(
     'ALLOWED_NETWORKS', '192.168.0.0/16,127.0.0.1'
 )
@@ -81,7 +82,7 @@ def get_system_info():
     """
     cpu_load = '0'
     uptime = 0
-    reboot_required = os.path.exists('/var/run/reboot-required')
+    reboot_required = os.path.exists(REBOOT_REQUIRED_FILE)
     if platform.system() == 'Linux':
         try:
             with open('/proc/loadavg', 'r') as f:
