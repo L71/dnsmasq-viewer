@@ -2,12 +2,14 @@
 
 A Python script to display dnsmasq DHCP lease data in a formatted table.
 
+Run it via `watch` to see updates continuously.
+
 ## Features
 
 - Parses dnsmasq lease files (space-separated format)
 - Converts Unix epoch timestamps to human-readable local time
 - Displays fixed-width columns for MAC address, IP address, and hostname
-- Sorts leases by expiry time in reverse order (newest first)
+- Sorts leases by expiry time in reverse order (usually newest lease first)
 - Truncates long hostnames to fit terminal width
 - Shows lease file modification time and path
 
