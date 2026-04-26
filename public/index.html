@@ -236,7 +236,7 @@
                 document.documentElement.removeAttribute("data-theme");
                 themeToggle.textContent = "🌙 Dark Mode";
             }
-            themeToggle.setAttribute("aria-expanded", isDark);
+            themeToggle.setAttribute("aria-pressed", isDark);
         }
 
         themeToggle.addEventListener("click", () => {
@@ -251,7 +251,7 @@
                 localStorage.setItem("theme", "dark");
                 themeToggle.textContent = "☀️ Light Mode";
             }
-            themeToggle.setAttribute("aria-expanded", !isDark);
+            themeToggle.setAttribute("aria-pressed", !isDark);
         });
 
         setTheme();
