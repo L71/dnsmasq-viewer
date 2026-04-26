@@ -58,12 +58,12 @@ docker compose up --build
 Or build and run manually:
 
 ```bash
-docker build -t dnsmasq-viewer-python .
+docker build -t dnsmasq-viewer .
 docker run -d -p 8000:8000 \
   -e REBOOT_REQUIRED=/mnt/run/reboot-required \
   -v /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro \
   -v /var/run:/mnt/run:ro \
-  dnsmasq-viewer-python
+  dnsmasq-viewer
 ```
 
 ### systemd
@@ -112,7 +112,7 @@ DEBUG=1 python src/server.py
 # Or in Docker
 docker run -d -e DEBUG=1 -p 8000:8000 \
   -v /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro \
-  dnsmasq-viewer-python
+  dnsmasq-viewer
 ```
 
 ## Known issues / Good-to-know
