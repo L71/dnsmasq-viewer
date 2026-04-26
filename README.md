@@ -24,13 +24,14 @@ This is what it looks like, also showing the disconnected alert.
 ![Screenshot](screenshot.png)
 
 
+In the `/script` directory there is a Python script that can be run on a dnsmasq server to display the current lease info in a similar way. This is completely separate from the web app.
+
+
 ## How & Why
 
 This was an experiment in building a small app for my homelab using OpenCode and various mostly local LLMs. The basic features were converted to Python by Qwen3.6 (cloud, via OpenCode) from an earlier Node.js prototype built using glm-4.7 if I remember correctly. A few architectural changes and performance fixes were made after manual review and testing but all updates to code and container-related files (possibly with a few single-line exceptions) were done by LLMs. The same applies to this README, except for this text.
 
 LLMs used: Mostly the Qwen family, 3.5/3.6 35B-A3B and Google Gemma-4 26B-A4B. Additional reviews are also provided occasionally by glm-4.7-flash and gpt-oss-20b.
-
-In the `/script` directory there is also a Python script that can be run on a dnsmasq server to display the current lease info in a similar way. This is completely separate from the web app. Run it via `watch` to see updates continuously.
 
 
 ## Requirements
