@@ -2,6 +2,7 @@ services:
   dnsmasq-viewer:
     image: dnsmasq-viewer:latest
     container_name: dnsmasq-viewer
+    pull_policy: build
     build:
       context: .
       dockerfile: Containerfile
