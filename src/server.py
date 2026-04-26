@@ -99,28 +99,15 @@ def get_system_info():
     used_mem = total_mem
 
     if platform.system() == 'Linux':
-        cgroup = False
         try:
-            with open('/sys/fs/cgroup/memory.max', 'r') as f:
-                limit = f.read().strip()
-                if limit != 'max':
-                    total_mem = int(limit)
-                    with open('/sys/fs/cgroup/memory.current', 'r') as f2:
-                        used_mem = int(f2.read().strip())
-                    cgroup = True
-        except (FileNotFoundError, PermissionError, ValueError):
+            with open('/proc/meminfo', 'r') as f:
+                for line in f:
+                    if line.startswith('MemTotal:'):
+                        total_mem = int(line.split()[1]) * 1024
+                    elif line.startswith('MemAvailable:'):
+                        used_mem = total_mem - int(line.split()[1]) * 1024
+        except Exception:
             pass
-
-        if not cgroup:
-            try:
-                with open('/proc/meminfo', 'r') as f:
-                    for line in f:
-                        if line.startswith('MemAvailable:'):
-                            available = int(line.split()[1]) * 1024
-                            used_mem = total_mem - available
-                            break
-            except Exception:
-                pass
     else:
         used_mem = total_mem - os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_AVPHYS_PAGES')
     mem_usage = f'{(used_mem / total_mem) * 100:.2f}' if total_mem > 0 else '0'
