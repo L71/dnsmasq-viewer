@@ -274,7 +274,8 @@
                 const response = await fetch("/system-info");
                 if (!response.ok) {
                     const errorText = await response.text();
-                    throw new Error(`Server error (${response.status}): ${errorText}`);
+                    const match = errorText.match(/"error":\s*"([^"]+)"/);
+                    throw new Error(match ? match[1] : errorText);
                 }
                 const systemInfo = await response.json();
                 cpuLoadEl.textContent = systemInfo.cpuLoad;
@@ -290,10 +291,11 @@
                 setConnected(true);
                 fetchLeases();
             } catch (error) {
-                setConnected(false);
-                if (error.message.includes("Server error")) {
+                if (error.message === "Failed to get system info") {
                     statusBanner.className = "error";
                     statusBanner.textContent = error.message;
+                } else {
+                    setConnected(false);
                 }
             }
         }
@@ -305,7 +307,8 @@
                 const response = await fetch("/leases");
                 if (!response.ok) {
                     const errorText = await response.text();
-                    throw new Error(`Server error (${response.status}): ${errorText}`);
+                    const match = errorText.match(/"error":\s*"([^"]+)"/);
+                    throw new Error(match ? match[1] : errorText);
                 }
                 const data = await response.json();
                 const leases = data.leases;
@@ -315,10 +318,12 @@
                 lastRefreshedSpan.textContent = new Date(currentFileMtime).toLocaleString();
                 previousFileMtime = currentFileMtime;
             } catch (error) {
-                if (error.message.includes("Server error")) {
+                if (error.message === "Failed to read or parse leases") {
                     const timestamp = new Date().toLocaleString();
                     statusBanner.className = "error";
                     statusBanner.textContent = `${error.message} (${timestamp})\nReload page to clear`;
+                } else {
+                    setConnected(false);
                 }
             }
         }
@@ -353,7 +358,6 @@
         }
 
         fetchSystemInfo();
-        fetchLeases();
         setInterval(fetchSystemInfo, 5000);
     </script>
 </body>
