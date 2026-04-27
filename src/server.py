@@ -96,7 +96,7 @@ def get_system_info():
             pass
 
     total_mem = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
-    used_mem = total_mem
+    used_mem = 0
 
     if platform.system() == 'Linux':
         try:
