@@ -1,9 +1,12 @@
 __pycache__/
 *.pyc
 *.swp
+.git/
 .gitignore
 README.md
 docker-compose.yaml
 Containerfile
 dnsmasq-leases*
 *.service
+screenshot.png
+script/
