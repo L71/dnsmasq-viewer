@@ -96,7 +96,11 @@ The service runs with systemd's `DynamicUser` (random unprivileged user, no home
 
 ## Configuration
 
-When using Docker Compose, you can also use a `.env` file in the project root to manage these variables.
+When using Docker Compose, you can also use a `.env` file in the project root to manage these variables. Copy `.env.example` and adjust as needed:
+
+```bash
+cp .env.example .env
+```
 
 | Environment variable | Description | Default |
 |---------------------|-------------|---------|
