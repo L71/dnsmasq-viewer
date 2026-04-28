@@ -127,7 +127,7 @@ docker run -d -e DEBUG=1 -p 8000:8000 \
 ## Known issues / Good-to-know
 
 - DHCP client IDs not displayed since I am not using that in my setup.
-- Network access control is enabled by default — only IPs in `192.168.0.0/16` or `127.0.0.1` can connect. Set `ALLOWED_NETWORKS` to customize, e.g. `10.0.0.0/8,172.16.0.0/12`. Use `0.0.0.0/0` to allow all connections (`::/0` for IPv6).
+- Network access control is enabled by default — only IPs in `192.168.0.0/16` or `127.0.0.1` can view data. Set `ALLOWED_NETWORKS` to customize, e.g. `10.0.0.0/8,172.16.0.0/12`. Use `0.0.0.0/0` to allow all connections (`::/0` for IPv6). Note that this only refuses to deliver data to unauthorized IPs — the server still accepts the TCP connection and responds with `403 Forbidden`. It is not a replacement for a proper firewall or network-level access control.
 - The `reboot-required` file check is specific to Debian/Ubuntu-based Linux distributions with the `unattended-upgrades` package installed.
 - There is no strict input validation on the lease file structure.
 - By default, HTTP request logging is disabled to keep the console clean. Set the `DEBUG` environment variable to enable detailed request logging. When enabled, you may see garbled "Bad request" messages from clients that retry with HTTPS on the HTTP port — this is harmless and can be safely ignored.
