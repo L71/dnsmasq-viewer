@@ -33,7 +33,9 @@ This was an experiment in building a small app for my homelab using OpenCode and
 
 LLMs used: Mostly the Qwen family, 3.5/3.6 35B-A3B and Gemma-4 26B-A4B. Additional reviews are also provided occasionally by glm-4.7-flash and gpt-oss-20b. Claude Code also got to take a look at the final app.
 
-The experiment was successful, I think. I got pretty much exactly what I wanted and I learned a lot in the process. I ended up spending much more time than I initially expected on such a relatively simple project but it's been fun, and at this point it is much more optimized and better-looking. This was also entirely by choice; even the first prototype worked pretty well and had the necessary features.
+The experiment was successful, I think. I pretty much got what I wanted and I learned a lot in the process. I ended up spending much more time than I initially expected on such a relatively simple project, but it's been fun, and at this point it is much more optimized and better-looking. Spending more time was entirely my choice; even the first prototype worked pretty well and had the necessary features.
+
+An additional note about the choice of server language — the rewrite from Node.js was prompted by the realization that the app wound up with close to 70 dependencies installed and I wanted to keep the app as simple and easy to maintain as possible.
 
 
 ## Requirements
