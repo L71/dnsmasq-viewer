@@ -33,12 +33,12 @@ This was an experiment in building a small app for my homelab using OpenCode and
 
 LLMs used: Mostly the Qwen family, 3.5/3.6 35B-A3B and Gemma-4 26B-A4B. Additional reviews are also provided occasionally by glm-4.7-flash and gpt-oss-20b. Claude Code also got to take a look at the final app.
 
-The experiment was successful I think. I got pretty much exactly what I wanted and I learned a lot in the process. It took much more time than I initially expected to spend on such a relatively simple project but it's been fun and at this point it is much more optimized and better-looking.
+The experiment was successful, I think. I got pretty much exactly what I wanted and I learned a lot in the process. I ended up spending much more time than I initially expected on such a relatively simple project but it's been fun, and at this point it is much more optimized and better-looking. This was also entirely by choice; even the first prototype worked pretty well and had the necessary features.
 
 
 ## Requirements
 
-Python 3, tested and run on 3.12, 3.13 and 3.14. The code was created and tested on Linux — Debian 13 (x86_64) and Ubuntu 24.04 (aarch64).
+Python 3, versions 3.12, 3.13 and 3.14 are known to work. The code was created and tested on Linux — Debian 13 (x86_64) and Ubuntu 24.04 (aarch64).
 
 The server uses about 10-20 MB memory and does not process anything unless a client is actively requesting data via the web page. This does not cause noticeable load.
 
