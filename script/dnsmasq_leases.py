@@ -48,11 +48,7 @@ def format_expiry(epoch):
     return dt.strftime('%Y-%m-%d %H:%M:%S')
 
 
-def truncate_hostname(hostname, max_width):
-    """Truncate hostname if it exceeds the maximum width."""
-    if len(hostname) > max_width:
-        return hostname[:max_width - 3] + '...'
-    return hostname
+
 
 
 def print_table(leases, file_mtime=None, filepath=None):
@@ -67,7 +63,7 @@ def print_table(leases, file_mtime=None, filepath=None):
     # Calculate column widths
     max_ip_len = max(len(l['ip']) for l in leases) + 2
     max_mac_len = max(len(l['mac']) for l in leases) + 2
-    max_hostname_len = 20  # Fixed width for hostname
+    max_hostname_len = max((len(l['hostname']) for l in leases), default=0) + 2
 
     # Print header
     print(f"{'Expiry':<22} {'MAC':<{max_mac_len}} {'IP':<{max_ip_len}} {'Hostname':<{max_hostname_len}}")
@@ -76,7 +72,7 @@ def print_table(leases, file_mtime=None, filepath=None):
     # Print data rows (sorted by expiry in reverse order)
     for lease in leases:
         expiry_str = format_expiry(lease['expiry_epoch'])
-        hostname = truncate_hostname(lease['hostname'], max_hostname_len)
+        hostname = lease['hostname']
         print(f"{expiry_str:<22} {lease['mac']:<{max_mac_len}} {lease['ip']:<{max_ip_len}} {hostname:<{max_hostname_len}}")
 
 

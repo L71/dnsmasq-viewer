@@ -9,14 +9,13 @@ Run it via `watch` to see updates continuously.
 - Parses dnsmasq lease files (space-separated format)
 - Converts Unix epoch timestamps to human-readable local time
 - Displays fixed-width columns for MAC address, IP address, and hostname
-- Sorts leases by expiry time in reverse order (usually newest lease first)
-- Truncates long hostnames to fit terminal width
+- Sorts leases by expiry time in reverse order
 - Shows lease file modification time and path
 
 ## Usage
 
 ```bash
-python3 dnsmasq_leases.py [file]
+./dnsmasq_leases.py [file]
 ```
 
 ### Arguments
@@ -28,11 +27,11 @@ python3 dnsmasq_leases.py [file]
 
 ```bash
 # Use default path
-python3 dnsmasq_leases.py
+./dnsmasq_leases.py
 
 # Specify custom path
-python3 dnsmasq_leases.py /etc/dnsmasq.leases
-python3 dnsmasq_leases.py ./dnsmasq.leases
+./dnsmasq_leases.py /etc/dnsmasq.leases
+./dnsmasq_leases.py ./dnsmasq.leases
 ```
 
 ## Output Format
@@ -42,7 +41,7 @@ The script outputs a table with the following columns:
 1. **Expiry** - DHCP lease expiry time (Unix epoch converted to YYYY-MM-DD HH:MM:SS)
 2. **MAC** - Client MAC address
 3. **IP** - Assigned IP address
-4. **Hostname** - Client hostname (truncated if too long)
+4. **Hostname** - Client hostname
 
 ## Example Output
 
