@@ -72,7 +72,7 @@ def print_table(leases, file_mtime=None, filepath=None):
     # Print data rows (sorted by expiry in reverse order)
     for lease in leases:
         expiry_str = format_expiry(lease['expiry_epoch'])
-        hostname = lease['hostname']
+        hostname = '-' if lease['hostname'] == '*' else lease['hostname']
         print(f"{expiry_str:<22} {lease['mac']:<{max_mac_len}} {lease['ip']:<{max_ip_len}} {hostname:<{max_hostname_len}}")
 
 
