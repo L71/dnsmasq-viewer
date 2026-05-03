@@ -29,9 +29,9 @@ In the `/script` directory, there is a Python script that can be run on a dnsmas
 
 ## How & Why
 
-This was an experiment in building a small app for my homelab using OpenCode and various mostly local LLMs. The basic features were converted to Python by Qwen3.6 (cloud, via OpenCode) from an earlier Node.js prototype built using glm-4.7 if I remember correctly. A few architectural changes and performance fixes were made after manual review and testing but all updates to code and container-related files (possibly with a few single-line exceptions) were done by LLMs. The same applies to this README, except for this text.
+This was an experiment in building a small app for my homelab using OpenCode and various mostly local LLMs. The basic features were converted to Python by Qwen3.6 (cloud, via OpenCode) from an earlier Node.js prototype built using glm-4.7, if I remember correctly. A few architectural changes and performance fixes were made after manual review and testing but all updates to code and container-related files (possibly with a few single-line exceptions) were done by LLMs. The same applies to this README, except for this text.
 
-LLMs used: Mostly the Qwen family, 3.5/3.6 35B-A3B and Gemma-4 26B-A4B. Additional reviews are also provided occasionally by glm-4.7-flash and gpt-oss-20b. Claude Code also got to take a look at the final app.
+LLMs used: Mostly the Qwen family, 3.5/3.6 35B-A3B and Gemma-4 26B-A4B. Additional reviews were also provided occasionally by glm-4.7-flash and gpt-oss-20b. Claude Code also got to take a look at the final app.
 
 The experiment was successful, I think. I pretty much got what I wanted and I learned a lot in the process. I ended up spending much more time than I initially expected on such a relatively simple project, but it's been fun, and at this point it is much more optimized and better-looking. Spending more time was entirely my choice; even the first prototype worked pretty well and had the necessary features.
 
