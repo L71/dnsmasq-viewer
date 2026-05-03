@@ -134,6 +134,9 @@ def is_allowed(client_ip):
     """Check if the client IP is in the allowed networks."""
     try:
         addr = ipaddress.ip_address(client_ip)
+        # Convert IPv4-mapped IPv6 addresses (from dual-stack sockets) to IPv4
+        if addr.version == 6 and type(addr).ipv4_mapped is not None and getattr(addr, 'ipv4_mapped', None):
+            addr = addr.ipv4_mapped
         return any(addr in network for network in ALLOWED_NETWORK_OBJ)
     except ValueError:
         return False
@@ -224,6 +227,8 @@ def signal_handler(signum, frame):
 if __name__ == '__main__':
     HOST = os.environ.get('HOST', '0.0.0.0')
     PORT = int(os.environ.get('PORT', 8000))
+    hints = socket.getaddrinfo(HOST, 0, socket.AF_UNSPEC, socket.SOCK_STREAM)
+    socketserver.TCPServer.address_family = hints[0][0]
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer((HOST, PORT), Handler) as httpd:
         signal.signal(signal.SIGINT, signal_handler)

@@ -10,7 +10,7 @@ This is a lightweight web app that displays DHCP lease information from a dnsmas
 - Auto-refreshes every 5 seconds
 - Shows some system info: CPU load, memory usage, uptime, hostname
 - Displays "(reboot required)" next to the Uptime label when `/var/run/reboot-required` exists on the host
-- Times and dates are displayed using the browser's time zone conventions if correctly configured in the browser and/or the client OS.
+- Times and dates are displayed using the browser's time zone conventions if correctly configured in the browser and/or the client OS
 - Connection status banner (Hidden unless needed)
   - Alerts if the backend is offline
   - Alerts if the lease file cannot be read (permission denied/wrong path/corrupt file)
@@ -33,16 +33,16 @@ This was an experiment in building a small app for my homelab using OpenCode and
 
 LLMs used: Mostly the Qwen family, 3.5/3.6 35B-A3B and Gemma-4 26B-A4B. Additional reviews were also provided occasionally by glm-4.7-flash and gpt-oss-20b. Claude Code also got to take a look at the final app.
 
-The experiment was successful, I think. I pretty much got what I wanted and I learned a lot in the process. I ended up spending much more time than I initially expected on such a relatively simple project, but it's been fun, and at this point it is much more optimized and better-looking. Spending more time was entirely my choice; even the first prototype worked pretty well and had the necessary features.
+The experiment was successful, I think. I pretty much got what I wanted and I learned a lot in the process. I ended up spending much more time than I initially expected on such a relatively simple project, but it's been fun, and at this point it has been optimized considerably and looks much better. Spending more time was entirely my choice; even the first prototype worked pretty well and had the necessary features.
 
-An additional note about the choice of server language — the rewrite from Node.js was prompted by the realization that the app wound up with close to 70 dependencies installed and I wanted to keep the app as simple and easy to maintain as possible.
+An additional note about the choice of server language — the rewrite from Node.js was prompted by the realization that the app ended up with close to 70 dependencies installed and I wanted to keep the app as simple and easy to maintain as possible.
 
 
 ## Requirements
 
 Python 3, versions 3.12, 3.13 and 3.14 are known to work. The code was created and tested on Linux — Debian 13 (x86_64) and Ubuntu 24.04 (aarch64).
 
-The server uses about 10-20 MB memory and does not process anything unless a client is actively requesting data via the web page. This does not cause noticeable load.
+The server uses about 10-20 MB memory and does not process anything unless a client is actively requesting data via the web page. This does not produce any noticeable load.
 
 Any modern browser with Javascript enabled should work fine on the client side.
 
@@ -108,7 +108,7 @@ cp .env.example .env
 
 | Environment variable | Description | Default |
 |---------------------|-------------|---------|
-| `HOST` | HTTP listen address | `0.0.0.0` (all addresses) |
+| `HOST` | HTTP listen address. Set to `::` to enable IPv6 (dual-stack on Linux) | `0.0.0.0` |
 | `PORT` | HTTP listen port | `8000` |
 | `LEASEFILE` | Path to the dnsmasq lease file | `/var/lib/misc/dnsmasq.leases` |
 | `HOSTNAME` | Override the system hostname | |
@@ -128,10 +128,17 @@ docker run -d -e DEBUG=1 -p 8000:8000 \
   dnsmasq-viewer
 ```
 
+## IPv6
+
+The server defaults to listening for IPv4 connections only. To enable dual-stack (both IPv4 and IPv6), set `HOST` to `::`. The `ALLOWED_NETWORKS` setting then also needs to be adjusted so that IPv6 connections are not rejected — for example by adding `fd00::/8` for private IPv6 networks.
+
+Podman with modern `netavark`/`pasta` networking typically provides IPv6 connectivity automatically. Docker may require extra configuration — enabling IPv6 in the daemon configuration (`/etc/docker/daemon.json`) and potentially an explicit IPv6 port mapping in the compose file. Consult the Docker documentation for details.
+
+
 ## Known issues / Good-to-know
 
 - DHCP client IDs not displayed since I am not using them in my setup.
-- Network access control is enabled by default — only IPs in `192.168.0.0/16` or `127.0.0.1` can view data. Set `ALLOWED_NETWORKS` to customize, e.g. `10.0.0.0/8,172.16.0.0/12`. Use `0.0.0.0/0` to allow all connections (`::/0` for IPv6). Note that this only refuses to deliver data to unauthorized IPs — the server still accepts the TCP connection and responds with `403 Forbidden`. It is not a replacement for a proper firewall or network-level access control.
+- Network access control is enabled by default — only IPs in `192.168.0.0/16` or `127.0.0.1` can view data. Set `ALLOWED_NETWORKS` to customize, e.g. `10.0.0.0/8,172.16.0.0/12`.  Use `0.0.0.0/0,::/0` to allow all connections (both IPv4 and IPv6). Note that this only refuses to deliver data to unauthorized IPs — the server still accepts the TCP connection and responds with `403 Forbidden`. It is not a replacement for a proper firewall or network-level access control.
 - The `reboot-required` file check is specific to Debian/Ubuntu-based Linux distributions with the `unattended-upgrades` package installed.
 - There is no strict input validation on the lease file structure.
 - By default, HTTP request logging is disabled to keep the console clean. Set the `DEBUG` environment variable to enable detailed request logging. When enabled, you may see garbled "Bad request" messages from clients that retry with HTTPS on the HTTP port — this is harmless and can be safely ignored.
