@@ -250,8 +250,11 @@ if __name__ == '__main__':
     hints = socket.getaddrinfo(HOST, 0, socket.AF_UNSPEC, socket.SOCK_STREAM)
     socketserver.TCPServer.address_family = hints[0][0]
     socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer((HOST, PORT), Handler) as httpd:
-        signal.signal(signal.SIGINT, signal_handler)
-        signal.signal(signal.SIGTERM, signal_handler)
-        print(f'Serving at http://{HOST}:{PORT}')
+    httpd = socketserver.TCPServer((HOST, PORT), Handler)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    print(f'Serving at http://{HOST}:{PORT}')
+    try:
         httpd.serve_forever()
+    finally:
+        httpd.server_close()
