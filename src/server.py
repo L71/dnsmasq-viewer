@@ -42,6 +42,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
+
 def parse_leases():
     """
     Parse DNS lease entries from the lease file.
@@ -65,6 +66,7 @@ def parse_leases():
             })
     leases.sort(key=lambda l: l['expiry'], reverse=True)
     return leases
+
 
 def get_system_info():
     """
@@ -130,6 +132,17 @@ def get_system_info():
     }
 
 
+def format_address(client_ip):
+    """Convert IPv4-mapped IPv6 addresses to plain IPv4 strings."""
+    try:
+        addr = ipaddress.ip_address(client_ip)
+        if addr.version == 6 and getattr(addr, 'ipv4_mapped', None):
+            return str(addr.ipv4_mapped)
+        return str(addr)
+    except ValueError:
+        return str(client_ip)
+
+
 def is_allowed(client_ip):
     """Check if the client IP is in the allowed networks."""
     try:
@@ -140,6 +153,7 @@ def is_allowed(client_ip):
         return any(addr in network for network in ALLOWED_NETWORK_OBJ)
     except ValueError:
         return False
+
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     """HTTP request handler for the dnsmasq viewer server."""
@@ -158,9 +172,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         - /status: Health check
         - /, /index.html: Serve index page
         """
-        if not is_allowed(self.client_address[0]):
+        client_addr = format_address(self.client_address[0])
+        if not is_allowed(client_addr):
             logging.warning(
-                f"Denied connection from {self.client_address[0]}"
+                f"Denied connection from {client_addr}"
             )
             self.send_error_json(403, 'Access denied')
             return
@@ -214,10 +229,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def address_string(self):
+        """Return the client IP, converted to plain IPv4 if applicable."""
+        return format_address(self.client_address[0])
+
     def log_message(self, format, *args):
         """Log messages if DEBUG is enabled."""
         if DEBUG:
             logging.info(f"{self.address_string()}: {format % args}")
+
 
 def signal_handler(signum, frame):
     """Handle SIGINT and SIGTERM with immediate shutdown."""
