@@ -135,7 +135,7 @@ def is_allowed(client_ip):
     try:
         addr = ipaddress.ip_address(client_ip)
         # Convert IPv4-mapped IPv6 addresses (from dual-stack sockets) to IPv4
-        if addr.version == 6 and type(addr).ipv4_mapped is not None and getattr(addr, 'ipv4_mapped', None):
+        if addr.version == 6 and getattr(addr, 'ipv4_mapped', None):
             addr = addr.ipv4_mapped
         return any(addr in network for network in ALLOWED_NETWORK_OBJ)
     except ValueError:
