@@ -85,33 +85,28 @@ def get_system_info():
     cpu_load = '0'
     uptime = 0
     reboot_required = os.path.exists(REBOOT_REQUIRED_FILE)
-    if platform.system() == 'Linux':
-        try:
-            with open('/proc/loadavg', 'r') as f:
-                cpu_load = f'{float(f.read().split()[0]):.2f}'
-        except Exception:
-            pass
-        try:
-            with open('/proc/uptime', 'r') as f:
-                uptime = int(float(f.read().split()[0]))
-        except Exception:
-            pass
+    try:
+        with open('/proc/loadavg', 'r') as f:
+            cpu_load = f'{float(f.read().split()[0]):.2f}'
+    except Exception:
+        pass
+    try:
+        with open('/proc/uptime', 'r') as f:
+            uptime = int(float(f.read().split()[0]))
+    except Exception:
+        pass
 
-    total_mem = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
+    total_mem = 0
     used_mem = 0
-
-    if platform.system() == 'Linux':
-        try:
-            with open('/proc/meminfo', 'r') as f:
-                for line in f:
-                    if line.startswith('MemTotal:'):
-                        total_mem = int(line.split()[1]) * 1024
-                    elif line.startswith('MemAvailable:'):
-                        used_mem = total_mem - int(line.split()[1]) * 1024
-        except Exception:
-            pass
-    else:
-        used_mem = total_mem - os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_AVPHYS_PAGES')
+    try:
+        with open('/proc/meminfo', 'r') as f:
+            for line in f:
+                if line.startswith('MemTotal:'):
+                    total_mem = int(line.split()[1]) * 1024
+                elif line.startswith('MemAvailable:'):
+                    used_mem = total_mem - int(line.split()[1]) * 1024
+    except Exception:
+        pass
     mem_usage = f'{(used_mem / total_mem) * 100:.2f}' if total_mem > 0 else '0'
 
     file_mtime = 0
@@ -132,27 +127,29 @@ def get_system_info():
     }
 
 
-def format_address(client_ip):
-    """Convert IPv4-mapped IPv6 addresses to plain IPv4 strings."""
+def normalize_address(client_ip):
+    """Convert an IP string, normalizing IPv4-mapped IPv6 to plain IPv4."""
     try:
         addr = ipaddress.ip_address(client_ip)
         if addr.version == 6 and getattr(addr, 'ipv4_mapped', None):
-            return str(addr.ipv4_mapped)
-        return str(addr)
+            return addr.ipv4_mapped
+        return addr
     except ValueError:
-        return str(client_ip)
+        return None
+
+
+def format_address(client_ip):
+    """Convert an address to a plain string (IPv4-mapped IPv6 → IPv4)."""
+    addr = normalize_address(client_ip)
+    return str(addr) if addr else str(client_ip)
 
 
 def is_allowed(client_ip):
     """Check if the client IP is in the allowed networks."""
-    try:
-        addr = ipaddress.ip_address(client_ip)
-        # Convert IPv4-mapped IPv6 addresses (from dual-stack sockets) to IPv4
-        if addr.version == 6 and getattr(addr, 'ipv4_mapped', None):
-            addr = addr.ipv4_mapped
-        return any(addr in network for network in ALLOWED_NETWORK_OBJ)
-    except ValueError:
+    addr = normalize_address(client_ip)
+    if addr is None:
         return False
+    return any(addr in network for network in ALLOWED_NETWORK_OBJ)
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
