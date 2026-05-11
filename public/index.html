@@ -182,7 +182,7 @@
             </div>
         </div>
     </div>
-    <div id="statusBanner" aria-live="polite" role="alert" aria-labelledby="statusBannerTitle"></div>
+    <div id="statusBanner" aria-live="polite" role="alert"></div>
     <div class="content-box">
         <h3 style="margin-top: 0;">Current DHCP leases: <span id="currentLeaseCount">--</span></h3>
         <p class="timestamp" aria-live="polite">Last lease file update: <span id="lastRefreshed"></span></p>
@@ -210,9 +210,6 @@
         const currentLeaseCountEl = document.getElementById("currentLeaseCount");
         const statusBanner = document.getElementById("statusBanner");
         const themeToggle = document.getElementById("themeToggle");
-        const statusBannerTitle = document.getElementById("statusBannerTitle") || document.createElement("span");
-        statusBannerTitle.id = "statusBannerTitle";
-        statusBanner.insertAdjacentElement("afterbegin", statusBannerTitle);
         let currentFileMtime = null;
         let previousFileMtime = null;
         let connected = true;
@@ -240,18 +237,9 @@
         }
 
         themeToggle.addEventListener("click", () => {
-            const currentTheme = document.documentElement.getAttribute("data-theme");
-            let isDark = currentTheme === "dark";
-            if (isDark) {
-                document.documentElement.removeAttribute("data-theme");
-                localStorage.setItem("theme", "light");
-                themeToggle.textContent = "🌙 Dark Mode";
-            } else {
-                document.documentElement.setAttribute("data-theme", "dark");
-                localStorage.setItem("theme", "dark");
-                themeToggle.textContent = "☀️ Light Mode";
-            }
-            themeToggle.setAttribute("aria-pressed", !isDark);
+            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+            localStorage.setItem("theme", isDark ? "light" : "dark");
+            setTheme();
         });
 
         setTheme();
@@ -273,9 +261,8 @@
             try {
                 const response = await fetch("/system-info");
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    const match = errorText.match(/"error":\s*"([^"]+)"/);
-                    throw new Error(match ? match[1] : errorText);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error);
                 }
                 const systemInfo = await response.json();
                 cpuLoadEl.textContent = systemInfo.cpuLoad;
@@ -309,9 +296,8 @@
 
             const response = await fetch("/leases");
             if (!response.ok) {
-                const errorText = await response.text();
-                const match = errorText.match(/"error":\s*"([^"]+)"/);
-                throw new Error(match ? match[1] : errorText);
+                const errorData = await response.json();
+                throw new Error(errorData.error);
             }
             const data = await response.json();
             const leases = data.leases;
