@@ -279,6 +279,8 @@
                 setConnected(true);
             } catch (error) {
                 if (error.status === 500) {
+                    // tableBody.innerHTML = "";  // This will also empty the table on errors
+                    currentLeaseCountEl.textContent = "-- NOT UPDATING";
                     const timestamp = new Date().toLocaleString();
                     statusBanner.className = "error";
                     statusBanner.textContent = `${error.error} (${timestamp}) - Reload page to clear`;
