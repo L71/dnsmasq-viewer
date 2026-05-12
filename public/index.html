@@ -262,7 +262,7 @@
                 const response = await fetch("/system-info");
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.error);
+                    throw { status: response.status, error: errorData.error };
                 }
                 const systemInfo = await response.json();
                 cpuLoadEl.textContent = systemInfo.cpuLoad;
@@ -278,13 +278,10 @@
                 await fetchLeases();
                 setConnected(true);
             } catch (error) {
-                if (error.message === "Failed to get system info") {
-                    statusBanner.className = "error";
-                    statusBanner.textContent = error.message;
-                } else if (error.message === "Failed to read or parse leases") {
+                if (error.status === 500) {
                     const timestamp = new Date().toLocaleString();
                     statusBanner.className = "error";
-                    statusBanner.textContent = `${error.message} (${timestamp})\nReload page to clear`;
+                    statusBanner.textContent = `${error.error} (${timestamp}) - Reload page to clear`;
                 } else {
                     setConnected(false);
                 }
@@ -297,7 +294,7 @@
             const response = await fetch("/leases");
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error);
+                throw { status: response.status, error: errorData.error };
             }
             const data = await response.json();
             const leases = data.leases;
