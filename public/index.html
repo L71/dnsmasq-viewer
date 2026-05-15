@@ -200,6 +200,7 @@
         </table>
     </div>
     <script>
+        // === DOM Element References ===
         const tableBody = document.getElementById("leasesTable");
         const lastRefreshedSpan = document.getElementById("lastRefreshed");
         const cpuLoadEl = document.getElementById("cpuLoad");
@@ -210,10 +211,12 @@
         const currentLeaseCountEl = document.getElementById("currentLeaseCount");
         const statusBanner = document.getElementById("statusBanner");
         const themeToggle = document.getElementById("themeToggle");
-        let currentFileMtime = null;
-        let previousFileMtime = null;
-        let connected = true;
+        // === State Variables ===
+        let currentFileMtime = null;   // mtime from latest /system-info response
+        let previousFileMtime = null;  // mtime of last lease fetch (change detection)
+        let connected = true;          // connection status for banner display
 
+        // === Uptime Formatting ===
         function formatUptime(seconds) {
             const d = Math.floor(seconds / (3600 * 24));
             const h = Math.floor((seconds % (3600 * 24)) / 3600);
@@ -222,6 +225,8 @@
             return `${d}d ${h}h ${m}m ${s}s`;
         }
 
+        // === Theme Handling ===
+        // Prefers localStorage override, falls back to system preference.
         function setTheme() {
             const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
             const savedTheme = localStorage.getItem("theme");
@@ -244,19 +249,23 @@
 
         setTheme();
 
+        // === Connection Status ===
         function setConnected(ok) {
-            if (ok === connected) return;
+            if (ok === connected) return;  // skip if state hasn't changed
             connected = ok;
             if (ok) {
                 statusBanner.className = "ok";
                 statusBanner.textContent = "Connection restored";
-                setTimeout(() => { statusBanner.className = ""; statusBanner.textContent = ""; }, 3000);
+                setTimeout(() => { statusBanner.className = ""; statusBanner.textContent = ""; }, 3000);  // auto-hide after 3s
             } else {
                 statusBanner.className = "error";
                 statusBanner.textContent = "Cannot connect to server";
             }
         }
 
+        // === Data Fetching ===
+        // Fetches system info, updates UI, then triggers lease refresh if file changed.
+        // The /system-info endpoint provides fileMtime; fetchLeases skips if unchanged.
         async function fetchSystemInfo() {
             try {
                 const response = await fetch("/system-info");
@@ -291,6 +300,7 @@
         }
 
         async function fetchLeases() {
+            // Skip fetch if lease file hasn't changed since last update.
             if (currentFileMtime !== null && currentFileMtime === previousFileMtime) return;
 
             const response = await fetch("/leases");
@@ -306,6 +316,7 @@
             previousFileMtime = currentFileMtime;
         }
 
+        // === Lease Rendering ===
         function displayLeases(leases) {
             tableBody.innerHTML = "";
             if (leases.length === 0) {
@@ -335,8 +346,10 @@
             });
         }
 
-         fetchSystemInfo();
-         setInterval(fetchSystemInfo, 5000);
-     </script>
+        // === Bootstrap ===
+        // Initial fetch on page load, then poll every 5 seconds.
+        fetchSystemInfo();
+        setInterval(fetchSystemInfo, 5000);
+    </script>
 </body>
 </html>
