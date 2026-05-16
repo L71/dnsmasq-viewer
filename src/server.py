@@ -26,6 +26,12 @@ ALLOWED_NETWORKS = os.environ.get(
     'ALLOWED_NETWORKS', '192.168.0.0/16,127.0.0.1'
 )
 
+logging.basicConfig(
+    level=logging.INFO if DEBUG else logging.WARNING,
+    format='%(levelname)s: %(message)s',
+    handlers=[logging.StreamHandler()]
+)
+
 ALLOWED_NETWORK_OBJ = []
 for net in ALLOWED_NETWORKS.split(','):
     net = net.strip()
@@ -36,11 +42,8 @@ for net in ALLOWED_NETWORKS.split(','):
     except ValueError:
         logging.warning(f'Skipping invalid network: {net}')
 
-logging.basicConfig(
-    level=logging.INFO if DEBUG else logging.WARNING,
-    format='%(levelname)s: %(message)s',
-    handlers=[logging.StreamHandler()]
-)
+if not ALLOWED_NETWORK_OBJ:
+    logging.warning('No valid networks in ALLOWED_NETWORKS — all connections will be denied')
 
 
 def parse_leases():
