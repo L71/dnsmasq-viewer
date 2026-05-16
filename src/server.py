@@ -189,10 +189,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             except Exception:
                 self.send_error_json(500, 'Failed to get system info')
         elif self.path == '/status':
-            self.send_response(200)
-            self.send_header('Content-Type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(b'OK')
+            self.send_json({'running': True})
         elif self.path in ('/', '/index.html'):
             super().do_GET()
         else:

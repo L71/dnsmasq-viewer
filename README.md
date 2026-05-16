@@ -96,7 +96,7 @@ The service runs with systemd's `DynamicUser` (random unprivileged user, no home
 | `GET /` | Serves the web UI |
 | `GET /leases` | Returns lease data as JSON |
 | `GET /system-info` | Returns system metrics as JSON |
-| `GET /status` | Returns `OK` and HTTP status 200 when running |
+| `GET /status` | Returns `{"running": true}` in JSON format |
 
 ## Configuration
 
