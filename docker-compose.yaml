@@ -8,11 +8,16 @@ services:
       dockerfile: Containerfile
     ports:
       - "8000:8000/tcp"
+    # Variables can be overridden with a .env file in the project root.
+    # See .env.example for available options.
     environment:
-      - HOST=0.0.0.0
-      - PORT=8000
-      - REBOOT_REQUIRED=/mnt/run/reboot-required
+      - HOST=${HOST:-0.0.0.0}
+      - PORT=${PORT:-8000}
+      - LEASEFILE=${LEASEFILE:-/var/lib/misc/dnsmasq.leases}
       - HOSTNAME=${HOSTNAME}
+      - REBOOT_REQUIRED=${REBOOT_REQUIRED:-/mnt/run/reboot-required}
+      - ALLOWED_NETWORKS=${ALLOWED_NETWORKS:-192.168.0.0/16,127.0.0.1}
+      - DEBUG=${DEBUG}
     volumes:
       - /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro
       - /var/run:/mnt/run:ro
