@@ -75,7 +75,7 @@ docker run -d -p 8000:8000 \
   dnsmasq-viewer
 ```
 
-> **Note:** The host's `/var/run` is a special directory (often a symlink to `/run`). Mounting it directly on top of the container's `/var/run` may not work as expected. The example and the compose file therefore mount it to `/mnt/run` instead, and sets `REBOOT_REQUIRED=/mnt/run/reboot-required`.
+> **Note:** The host's `/var/run` is a special directory (often a symlink to `/run`). Mounting it directly on top of the container's `/var/run` may not work as expected. The example and the compose file therefore mount it to `/mnt/run` instead, and set `REBOOT_REQUIRED=/mnt/run/reboot-required`.
 
 ### systemd
 
@@ -126,7 +126,9 @@ DEBUG=1 python src/server.py
 
 # Or in Docker
 docker run -d -e DEBUG=1 -p 8000:8000 \
+  -e REBOOT_REQUIRED=/mnt/run/reboot-required \
   -v /var/lib/misc/dnsmasq.leases:/var/lib/misc/dnsmasq.leases:ro \
+  -v /var/run:/mnt/run:ro \
   dnsmasq-viewer
 ```
 
