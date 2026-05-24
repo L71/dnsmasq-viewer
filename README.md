@@ -56,7 +56,7 @@ python src/server.py
 
 Open http://localhost:8000
 
-### Docker / Podman
+### Docker
 
 Docker Compose V2.20+ required (for `pull_policy`).
 
@@ -74,6 +74,8 @@ docker run -d -p 8000:8000 \
   -v /var/run:/mnt/run:ro \
   dnsmasq-viewer
 ```
+
+> **Note:** The host's `/var/run` is a special directory (often a symlink to `/run`). Mounting it directly on top of the container's `/var/run` may not work as expected. The example and the compose file therefore mount it to `/mnt/run` instead, and sets `REBOOT_REQUIRED=/mnt/run/reboot-required`.
 
 ### systemd
 
