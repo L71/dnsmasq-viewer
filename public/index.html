@@ -11,6 +11,7 @@
             --border-color: #ccc;
             --header-bg: #f2f2f2;
             --row-even-bg: #f9f9f9;
+            --row-hover-bg: #e8f4f8;
             --timestamp-color: #444;
             --system-info-bg: #f5f5f5;
             --stat-bg: #fff;
@@ -30,6 +31,7 @@
             --border-color: #666;
             --header-bg: #2a2a2a;
             --row-even-bg: #252525;
+            --row-hover-bg: #333;
             --timestamp-color: #bbb;
             --system-info-bg: #222;
             --stat-bg: #2a2a2a;
@@ -41,6 +43,26 @@
             --banner-ok-bg: #2a3a2a;
             --banner-ok-color: #66ff66;
             --banner-ok-border: #66ff66;
+            --focus-outline: #ffcc00;
+        }
+        [data-theme="terminal"] {
+            --bg-color: #050505;
+            --text-color: #33ff33;
+            --border-color: #1a5c1a;
+            --header-bg: #0d330d;
+            --row-even-bg: #0a120a;
+            --row-hover-bg: #0f2a0f;
+            --timestamp-color: #20c020;
+            --system-info-bg: #080808;
+            --stat-bg: #0a1a0a;
+            --stat-label-color: #20c020;
+            --stat-value-color: #33ff33;
+            --banner-error-bg: #2a0a0a;
+            --banner-error-color: #ff4444;
+            --banner-error-border: #aa2222;
+            --banner-ok-bg: #0a2a0a;
+            --banner-ok-color: #33ff33;
+            --banner-ok-border: #20aa20;
             --focus-outline: #ffcc00;
         }
         body {
@@ -68,6 +90,71 @@
         }
         tr:nth-child(even) {
             background-color: var(--row-even-bg);
+        }
+        tr:hover {
+            background-color: var(--row-hover-bg);
+        }
+        .copyable {
+            cursor: pointer;
+            position: relative;
+            padding-right: 55px;
+            transition: background-color 0.15s;
+        }
+        .copyable:hover {
+            background-color: var(--row-hover-bg);
+        }
+        .copyable .copy-icon {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            color: var(--text-color);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .copyable:hover .copy-icon {
+            opacity: 0.5;
+        }
+        .copyable:hover .copy-icon:hover {
+            opacity: 1;
+        }
+        .copyable .copied {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            font-weight: bold;
+            color: #155724;
+            background-color: #d4edda;
+            padding: 2px 6px;
+            border-radius: 3px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+        .copyable .copied.visible {
+            opacity: 1;
+        }
+        [data-theme="dark"] .copyable .copied {
+            color: #c3e6cb;
+            background-color: #28a745;
+        }
+        [data-theme="terminal"] body {
+            text-shadow: 0 0 6px rgba(51, 255, 51, 0.4);
+        }
+        [data-theme="terminal"] body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.3) 2px, rgba(0, 0, 0, 0.3) 3px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+        [data-theme="terminal"] .copyable .copied {
+            color: #33ff33;
+            background-color: #0d330d;
         }
         .timestamp {
             color: var(--timestamp-color);
@@ -159,7 +246,7 @@
     <div class="content-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h1 style="margin: 0;">DNSmasq server</h1>
-            <button id="themeToggle" role="button" title="Toggle dark mode" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+            <button id="themeToggle" role="button" title="Switch theme" aria-label="Switch theme">🌙 Dark Mode</button>
         </div>
         <div class="system-info" style="margin: 0; padding: 0; border: none; background: none;">
             <h3 style="margin-bottom: 10px;" id="systemInfoLabel">System Information</h3>
@@ -227,24 +314,23 @@
         }
 
         // === Theme Handling ===
-        // Prefers localStorage override, falls back to system preference.
+        // Cycles through 3 themes: light → dark → terminal → light.
+        const themes = ["light", "dark", "terminal"];
+        const themeLabels = { light: "🌙 Dark", dark: "💻 Terminal", terminal: "<span style='font-size:1.5em'>✺</span> Light" };
         function setTheme() {
             const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
             const savedTheme = localStorage.getItem("theme");
-            let isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
-            if (isDark) {
-                document.documentElement.setAttribute("data-theme", "dark");
-                themeToggle.textContent = "☀️ Light Mode";
-            } else {
-                document.documentElement.removeAttribute("data-theme");
-                themeToggle.textContent = "🌙 Dark Mode";
-            }
-            themeToggle.setAttribute("aria-pressed", isDark);
+            let effectiveTheme = savedTheme || (prefersDark ? "dark" : "light");
+            document.documentElement.setAttribute("data-theme", effectiveTheme);
+            themeToggle.innerHTML = themeLabels[effectiveTheme] + " Mode";
+            themeToggle.setAttribute("aria-pressed", effectiveTheme !== "light");
         }
 
         themeToggle.addEventListener("click", () => {
-            const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-            localStorage.setItem("theme", isDark ? "light" : "dark");
+            const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
+            const currentIndex = themes.indexOf(currentTheme);
+            const nextTheme = themes[(currentIndex + 1) % themes.length];
+            localStorage.setItem("theme", nextTheme);
             setTheme();
         });
 
@@ -332,19 +418,71 @@
             }
             leases.forEach((lease) => {
                 const row = document.createElement("tr");
-                const cells = [
-                    new Date(lease.expiry * 1000).toLocaleString(),
-                    lease.mac,
-                    lease.ip,
-                    lease.hostname
-                ];
-                cells.forEach((text) => {
-                    const td = document.createElement("td");
-                    td.textContent = text;
-                    row.appendChild(td);
-                });
+                
+                const expiryTd = document.createElement("td");
+                expiryTd.textContent = new Date(lease.expiry * 1000).toLocaleString();
+                row.appendChild(expiryTd);
+                
+                row.appendChild(createCopyableCell(lease.mac));
+                row.appendChild(createCopyableCell(lease.ip));
+                row.appendChild(createCopyableCell(lease.hostname));
+                
                 tableBody.appendChild(row);
             });
+        }
+
+        function createCopyableCell(text) {
+            const td = document.createElement("td");
+            td.className = "copyable";
+            td.onclick = () => copyCell(td);
+            const valueSpan = document.createElement("span");
+            valueSpan.textContent = text;
+            td.appendChild(valueSpan);
+            const copyIcon = document.createElement("span");
+            copyIcon.className = "copy-icon";
+            copyIcon.textContent = "copy";
+            td.appendChild(copyIcon);
+            const copiedSpan = document.createElement("span");
+            copiedSpan.className = "copied";
+            copiedSpan.textContent = "Copied!";
+            td.appendChild(copiedSpan);
+            return td;
+        }
+
+        function copyCell(td) {
+            const valueSpan = td.querySelector("span:first-child");
+            const copiedSpan = td.querySelector(".copied");
+            const text = valueSpan.textContent;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopied(copiedSpan);
+                }).catch(() => {
+                    fallbackCopy(text, copiedSpan);
+                });
+            } else {
+                fallbackCopy(text, copiedSpan);
+            }
+        }
+
+        function fallbackCopy(text, copiedSpan) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.left = "-9999px";
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand("copy");
+                showCopied(copiedSpan);
+            } catch (err) {
+                console.error("Failed to copy:", err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showCopied(copiedSpan) {
+            copiedSpan.classList.add("visible");
+            setTimeout(() => copiedSpan.classList.remove("visible"), 3000);
         }
 
         // === Bootstrap ===
