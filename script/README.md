@@ -2,7 +2,7 @@
 
 A Python script to display dnsmasq DHCP lease data in a formatted table.
 
-Run it via `watch` to see updates continuously.
+Run it with `watch` to see continuous updates.
 
 ## Features
 

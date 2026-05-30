@@ -6,12 +6,12 @@ This is a lightweight web app that displays DHCP lease information from a dnsmas
 ## Features
 
 - Parses the dnsmasq lease file and displays leases in a table, reverse sorted by lease expiry time, which usually results in the most recent lease being on top
-- Fields displayed: Lease expiry time, MAC address, IP address, hostname as seen by `dnsmasq`. The DHCP client ID field is returned by the server but ignored by the frontend for now (I am not using it; my `dnsmasq` is running with `dhcp-ignore-clid`)
+- The following fields are displayed: Lease expiry time, MAC address, IP address, hostname as seen by `dnsmasq`. The DHCP client ID field is returned by the server but ignored by the frontend for now (I am not using it; my `dnsmasq` is running with `dhcp-ignore-clid`)
 - Auto-refreshes every 5 seconds
 - Shows some system info: CPU load, memory usage, uptime, hostname
 - Displays "(reboot required)" next to the Uptime label when `/var/run/reboot-required` exists on the host
 - Times and dates are displayed using the browser's time zone conventions if correctly configured in the browser and/or the client OS
-- Connection status banner (Hidden unless needed)
+- Connection status banner (hidden unless needed)
   - Alerts if the backend is offline
   - Alerts if the lease file cannot be read (permission denied/wrong path/corrupt file)
 - Three display themes (light, dark, retro terminal)
@@ -20,19 +20,19 @@ This is a lightweight web app that displays DHCP lease information from a dnsmas
 - Network access control — restricts access to specific IP ranges
 - Deployment toolkit included (more info below)
 
-This is what it looks like, also showing the disconnected alert.
+This is what the app looks like, including the disconnected alert.
 
 ![Screenshot](screenshot.png)
 
 
-In the `/script` directory, there is a Python script that can be run on a dnsmasq server to display the current lease info in a similar way. This is completely separate from the web app.
+In the `/script` directory, there is a Python script that can be run on a dnsmasq server to display the current lease information in a similar way. This is completely separate from the web app.
 
 
 ## How & Why
 
-This was an experiment in building a small app for my homelab using OpenCode and various mostly local LLMs. The basic features were converted to Python by Qwen3.6 (cloud, via OpenCode) from an earlier Node.js prototype built using glm-4.7, if I remember correctly. A few architectural changes and performance fixes were made after manual review and testing but all updates to code and container-related files (possibly with a few single-line exceptions) were done by LLMs. The same applies to this README, except for this text.
+This was an experiment in building a small app for my homelab using OpenCode and various LLMs, mostly running locally. The basic features were converted to Python by Qwen3.6 (cloud, via OpenCode) from an earlier Node.js prototype built using glm-4.7, if I remember correctly. A few architectural changes and performance fixes were made after manual review and testing but all updates to code and container-related files (possibly with a few single-line exceptions) were done by LLMs. The same applies to this README, except for this text.
 
-LLMs used: Mostly the Qwen family, 3.5/3.6 35B-A3B and Gemma-4 26B-A4B. Additional reviews were also provided occasionally by glm-4.7-flash and gpt-oss-20b. Claude Code also got to take a look at the final app.
+LLMs used: Primarily the Qwen family, 3.5/3.6 35B-A3B and Gemma-4 26B-A4B. Additional reviews were also provided occasionally by glm-4.7-flash and gpt-oss-20b. Claude Code also got to take a look at the final app.
 
 The experiment was successful, I think. I pretty much got what I wanted and I learned a lot in the process. I ended up spending much more time than I initially expected on such a relatively simple project, but it's been fun, and at this point it has been optimized considerably and looks much better. Spending more time was entirely my choice; even the first prototype worked pretty well and had the necessary features.
 
@@ -41,7 +41,7 @@ An additional note about the choice of server language — the rewrite from Node
 
 ## Requirements
 
-Python 3, versions 3.12, 3.13 and 3.14 are known to work. The code was created and tested on Linux — Debian 13 (x86_64) and Ubuntu 24.04 (aarch64).
+Python 3.12, 3.13, and 3.14 are known to work. The code was created and tested on Linux — Debian 13 (x86_64) and Ubuntu 24.04 (aarch64).
 
 The server uses about 10-20 MB memory and does not process anything unless a client is actively requesting data via the web page. This does not produce any noticeable load.
 
@@ -76,7 +76,7 @@ docker run -d -p 8000:8000 \
   dnsmasq-viewer
 ```
 
-> **Note:** The host's `/var/run` is a special directory (often a symlink to `/run`). Mounting it directly on top of the container's `/var/run` may not work as expected. The example and the compose file therefore mount it to `/mnt/run` instead, and set `REBOOT_REQUIRED=/mnt/run/reboot-required`.
+> **Note:** The `/var/run` is a special directory (often a symlink to `/run`). Mounting it directly over the container's `/var/run` may not work as expected. The example and the compose file therefore mount it to `/mnt/run` instead, and set `REBOOT_REQUIRED=/mnt/run/reboot-required`.
 
 ### systemd
 
@@ -142,7 +142,7 @@ Podman with modern `netavark`/`pasta` networking typically provides IPv6 connect
 
 ## Known issues / Good-to-know
 
-- DHCP client IDs not displayed since I am not using them in my setup.
+- DHCP client IDs are not displayed since I am not using them in my setup.
 - Network access control is enabled by default — only IPs in `192.168.0.0/16` or `127.0.0.1` can view data. Set `ALLOWED_NETWORKS` to customize, e.g. `10.0.0.0/8,172.16.0.0/12`.  Use `0.0.0.0/0,::/0` to allow all connections (both IPv4 and IPv6). Note that this only refuses to deliver data to unauthorized IPs — the server still accepts the TCP connection and responds with `403 Forbidden`. It is not a replacement for a proper firewall or network-level access control.
 - The `reboot-required` file check is specific to Debian/Ubuntu-based Linux distributions with the `unattended-upgrades` package installed.
 - There is no strict input validation on the lease file structure.
