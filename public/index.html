@@ -45,25 +45,25 @@
             --banner-ok-border: #66ff66;
             --focus-outline: #ffcc00;
         }
-        [data-theme="terminal"] {
-            --bg-color: #050505;
-            --text-color: #33ff33;
-            --border-color: #1a5c1a;
-            --header-bg: #0d330d;
-            --row-even-bg: #0a120a;
-            --row-hover-bg: #0f2a0f;
-            --timestamp-color: #20c020;
-            --system-info-bg: #080808;
-            --stat-bg: #0a1a0a;
-            --stat-label-color: #20c020;
-            --stat-value-color: #33ff33;
-            --banner-error-bg: #2a0a0a;
-            --banner-error-color: #ff4444;
-            --banner-error-border: #aa2222;
-            --banner-ok-bg: #0a2a0a;
-            --banner-ok-color: #33ff33;
-            --banner-ok-border: #20aa20;
-            --focus-outline: #ffcc00;
+        [data-theme="retro"] {
+            --bg-color: #110a00;
+            --text-color: #ffb000;
+            --border-color: #664400;
+            --header-bg: #332200;
+            --row-even-bg: #1a1200;
+            --row-hover-bg: #2a1f00;
+            --timestamp-color: #cc8800;
+            --system-info-bg: #0f0800;
+            --stat-bg: #1a1400;
+            --stat-label-color: #cc8800;
+            --stat-value-color: #ffb000;
+            --banner-error-bg: #2a0a00;
+            --banner-error-color: #ff6600;
+            --banner-error-border: #aa4400;
+            --banner-ok-bg: #2a1a00;
+            --banner-ok-color: #ffcc44;
+            --banner-ok-border: #cc8800;
+            --focus-outline: #ffcc44;
         }
         body {
             font-family: monospace;
@@ -141,8 +141,8 @@
             color: #c3e6cb;
             background-color: #28a745;
         }
-        [data-theme="terminal"] body {
-            text-shadow: 0 0 6px rgba(51, 255, 51, 0.4);
+        [data-theme="retro"] body {
+            text-shadow: 0 0 6px rgba(255, 176, 0, 0.4);
         }
         [data-theme="terminal"] body::after {
             content: "";
@@ -314,9 +314,9 @@
         }
 
         // === Theme Handling ===
-        // Cycles through 3 themes: light → dark → terminal → light.
-        const themes = ["light", "dark", "terminal"];
-        const themeLabels = { light: "🌙 Dark", dark: "💻 Terminal", terminal: "<span style='font-size:1.5em'>✺</span> Light" };
+        // Cycles through 3 themes: light → dark → retro → light.
+        const themes = ["light", "dark", "retro"];
+        const themeLabels = { light: "🌙 Dark", dark: "💻 Retro", retro: "🌞 Light" };
         function setTheme() {
             const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
             const savedTheme = localStorage.getItem("theme");
