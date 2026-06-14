@@ -142,19 +142,15 @@
             background-color: #28a745;
         }
         [data-theme="retro"] body {
-            text-shadow: 0 0 6px rgba(255, 176, 0, 0.4);
+            text-shadow: 0 0 8px rgba(255, 176, 0, 0.6), 0 0 2px rgba(255, 176, 0, 0.3);
         }
-        [data-theme="terminal"] body::after {
+        [data-theme="retro"] body::after {
             content: "";
             position: fixed;
             inset: 0;
-            background: repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0, 0, 0, 0.3) 2px, rgba(0, 0, 0, 0.3) 3px);
+            background: repeating-linear-gradient(0deg, transparent 0px, transparent 1px, rgba(0, 0, 0, 0.15) 1px, rgba(0, 0, 0, 0.15) 2px);
             pointer-events: none;
             z-index: 9999;
-        }
-        [data-theme="terminal"] .copyable .copied {
-            color: #33ff33;
-            background-color: #0d330d;
         }
         .timestamp {
             color: var(--timestamp-color);

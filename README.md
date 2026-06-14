@@ -14,7 +14,7 @@ This is a lightweight web app that displays DHCP lease information from a dnsmas
 - Connection status banner (hidden unless needed)
   - Alerts if the backend is offline
   - Alerts if the lease file cannot be read (permission denied/wrong path/corrupt file)
-- Three display themes (light, dark, retro terminal)
+- Three display themes (light, dark, retro)
 - Click any MAC address, IP address, or hostname cell to copy its value to clipboard
 - Minimal dependencies — uses only Python stdlib
 - Network access control — restricts access to specific IP ranges
