@@ -209,7 +209,7 @@
             color: var(--banner-ok-color);
             border: 1px solid var(--banner-ok-border);
         }
-        #themeToggle {
+        #themeSelector {
             padding: 8px 12px;
             margin-left: 15px;
             background-color: var(--header-bg);
@@ -221,10 +221,10 @@
             font-family: inherit;
             z-index: 1000;
         }
-        #themeToggle:hover {
+        #themeSelector:hover {
             opacity: 0.9;
         }
-        #themeToggle:focus {
+        #themeSelector:focus {
             outline: 3px solid var(--focus-outline);
             outline-offset: 2px;
         }
@@ -242,7 +242,11 @@
     <div class="content-box">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <h1 style="margin: 0;">DNSmasq server</h1>
-            <button id="themeToggle" role="button" title="Switch theme" aria-label="Switch theme">🌙 Dark Mode</button>
+            <select id="themeSelector" aria-label="Switch theme">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="retro">Retro</option>
+            </select>
         </div>
         <div class="system-info" style="margin: 0; padding: 0; border: none; background: none;">
             <h3 style="margin-bottom: 10px;" id="systemInfoLabel">System Information</h3>
@@ -294,7 +298,7 @@
         const hostnameEl = document.getElementById("hostname");
         const currentLeaseCountEl = document.getElementById("currentLeaseCount");
         const statusBanner = document.getElementById("statusBanner");
-        const themeToggle = document.getElementById("themeToggle");
+        const themeSelector = document.getElementById("themeSelector");
         // === State Variables ===
         let currentFileMtime = null;   // mtime from latest /system-info response
         let previousFileMtime = null;  // mtime of last lease fetch (change detection)
@@ -310,23 +314,16 @@
         }
 
         // === Theme Handling ===
-        // Cycles through 3 themes: light → dark → retro → light.
-        const themes = ["light", "dark", "retro"];
-        const themeLabels = { light: "🌙 Dark", dark: "💻 Retro", retro: "🌞 Light" };
         function setTheme() {
             const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
             const savedTheme = localStorage.getItem("theme");
             let effectiveTheme = savedTheme || (prefersDark ? "dark" : "light");
             document.documentElement.setAttribute("data-theme", effectiveTheme);
-            themeToggle.innerHTML = themeLabels[effectiveTheme] + " Mode";
-            themeToggle.setAttribute("aria-pressed", effectiveTheme !== "light");
+            themeSelector.value = effectiveTheme;
         }
 
-        themeToggle.addEventListener("click", () => {
-            const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
-            const currentIndex = themes.indexOf(currentTheme);
-            const nextTheme = themes[(currentIndex + 1) % themes.length];
-            localStorage.setItem("theme", nextTheme);
+        themeSelector.addEventListener("change", () => {
+            localStorage.setItem("theme", themeSelector.value);
             setTheme();
         });
 
