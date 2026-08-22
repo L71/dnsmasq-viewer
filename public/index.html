@@ -362,7 +362,7 @@
                 } else {
                     uptimeLabelEl.textContent = "Uptime";
                 }
-                hostnameEl.textContent = systemInfo.hostname;
+                hostnameEl.textContent = systemInfo.displayHostname;
                 currentFileMtime = systemInfo.fileMtime;
                 await fetchLeases();
                 setConnected(true);

@@ -19,7 +19,7 @@ import logging
 import ipaddress
 
 LEASE_FILE = os.environ.get('LEASEFILE', '/var/lib/misc/dnsmasq.leases')
-HOSTNAME_OVERRIDE = os.environ.get('HOSTNAME')
+HOSTNAME_OVERRIDE = os.environ.get('DISPLAY_HOSTNAME')
 DEBUG = os.environ.get('DEBUG')
 REBOOT_REQUIRED_FILE = os.environ.get('REBOOT_REQUIRED', '/var/run/reboot-required')
 ALLOWED_NETWORKS = os.environ.get(
@@ -83,7 +83,7 @@ def get_system_info():
             - platform: OS platform name
             - arch: CPU architecture
             - uptime: System uptime in seconds
-            - hostname: System hostname
+            - displayHostname: System hostname
     """
     cpu_load = '0'
     uptime = 0
@@ -125,7 +125,7 @@ def get_system_info():
         'platform': platform.system(),
         'arch': platform.machine(),
         'uptime': uptime,
-        'hostname': HOSTNAME_OVERRIDE or socket.gethostname(),
+        'displayHostname': HOSTNAME_OVERRIDE or socket.gethostname(),
         'rebootRequired': reboot_required,
     }
 

@@ -14,7 +14,7 @@ services:
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-8000}
       - LEASEFILE=${LEASEFILE:-/var/lib/misc/dnsmasq.leases}
-      - HOSTNAME=${HOSTNAME}
+      - DISPLAY_HOSTNAME=${DISPLAY_HOSTNAME}
       - REBOOT_REQUIRED=${REBOOT_REQUIRED:-/mnt/run/reboot-required}
       - ALLOWED_NETWORKS=${ALLOWED_NETWORKS:-192.168.0.0/16,127.0.0.1}
       - DEBUG=${DEBUG}
