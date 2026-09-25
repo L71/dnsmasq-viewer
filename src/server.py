@@ -13,10 +13,9 @@ import http.server
 import socketserver
 import json
 import os
-import platform
+import ipaddress
 import socket
 import logging
-import ipaddress
 
 LEASE_FILE = os.environ.get('LEASEFILE', '/var/lib/misc/dnsmasq.leases')
 HOSTNAME_OVERRIDE = os.environ.get('DISPLAY_HOSTNAME')
@@ -80,7 +79,6 @@ def get_system_info():
             - fileMtime: Lease file modification time (milliseconds since epoch)
             - cpuLoad: Current CPU load as string
             - memUsage: Memory usage percentage as string
-            - platform: OS platform name
             - uptime: System uptime in seconds
             - displayHostname: System hostname
     """
@@ -121,7 +119,6 @@ def get_system_info():
         'fileMtime': file_mtime * 1000,
         'cpuLoad': cpu_load,
         'memUsage': mem_usage,
-        'platform': platform.system(),
         'uptime': uptime,
         'displayHostname': HOSTNAME_OVERRIDE or socket.gethostname(),
         'rebootRequired': reboot_required,
