@@ -81,7 +81,6 @@ def get_system_info():
             - cpuLoad: Current CPU load as string
             - memUsage: Memory usage percentage as string
             - platform: OS platform name
-            - arch: CPU architecture
             - uptime: System uptime in seconds
             - displayHostname: System hostname
     """
@@ -123,7 +122,6 @@ def get_system_info():
         'cpuLoad': cpu_load,
         'memUsage': mem_usage,
         'platform': platform.system(),
-        'arch': platform.machine(),
         'uptime': uptime,
         'displayHostname': HOSTNAME_OVERRIDE or socket.gethostname(),
         'rebootRequired': reboot_required,
